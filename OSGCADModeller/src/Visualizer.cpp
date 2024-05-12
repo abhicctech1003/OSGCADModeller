@@ -16,7 +16,7 @@ Visualizer::Visualizer(QWidget* parent) : QMainWindow(parent)
     setupUi();
     // Initially disable the additional buttons
     setPlaneButtonsEnabled(false);
-    setSaveAndClearButtonsEnabled(false);
+    setSaveAndDeleteButtonsEnabled(false);
     setPrimitivesButtonsEnabled(false);
 }
 
@@ -43,7 +43,7 @@ void Visualizer::setupUi()
     mEllipseButton = createButton("Ellipse", QColor(135, 206, 235)); // Sky blue
     mArcButton = createButton("Arc", QColor(135, 206, 235)); // Sky blue
     mSaveButton = createButton("Save", Qt::green);
-    mClearButton = createButton("Clear", Qt::red);
+    mDeleteButton = createButton("Delete", Qt::red);
 
     // Set size policies to make buttons square-shaped
     setSquareButton(mSketchButton);
@@ -57,7 +57,7 @@ void Visualizer::setupUi()
     setSquareButton(mEllipseButton);
     setSquareButton(mArcButton);
     setSquareButton(mSaveButton);
-    setSquareButton(mClearButton);
+    setSquareButton(mDeleteButton);
 
     // Connect toggle buttons to slots
     connect(mSketchButton, &QPushButton::clicked, this, &Visualizer::onSketchButtonClicked);
@@ -73,7 +73,7 @@ void Visualizer::setupUi()
     connect(mEllipseButton, &QPushButton::clicked, this, &Visualizer::onEllipseButtonClicked);
     connect(mArcButton, &QPushButton::clicked, this, &Visualizer::onArcButtonClicked);
     connect(mSaveButton, &QPushButton::clicked, this, &Visualizer::onSaveButtonClicked);
-    connect(mClearButton, &QPushButton::clicked, this, &Visualizer::onClearButtonClicked);
+    connect(mDeleteButton, &QPushButton::clicked, this, &Visualizer::onDeleteButtonClicked);
 
     // Create layout
     mGridLayout = new QGridLayout(this);
@@ -90,7 +90,7 @@ void Visualizer::setupUi()
     mGridLayout->addWidget(mEllipseButton, 0, 8);
     mGridLayout->addWidget(mArcButton, 0, 9);
     mGridLayout->addWidget(mSaveButton, 0, 10);
-    mGridLayout->addWidget(mClearButton, 0, 11);
+    mGridLayout->addWidget(mDeleteButton, 0, 11);
 
     mainLayout->addLayout(mGridLayout);
     mainLayout->addWidget(mOsgViewer);
@@ -101,7 +101,7 @@ void Visualizer::setupUi()
 
     mWindow.show();
 
-    mWindow.setWindowTitle(QCoreApplication::translate("Visualiser", "Visualiser", nullptr));
+    mWindow.setWindowTitle(QCoreApplication::translate("OSGCADModeler", "OSGCADModeler", nullptr));
 }
 
 QPushButton* Visualizer::createButton(const QString& text, const QColor& color)
@@ -117,7 +117,7 @@ QPushButton* Visualizer::createButton(const QString& text, const QColor& color)
 void Visualizer::onSketchButtonClicked()
 {
     setPlaneButtonsEnabled(true);
-    setSaveAndClearButtonsEnabled(true);
+    setSaveAndDeleteButtonsEnabled(true);
     setPrimitivesButtonsEnabled(false);
 
     mOsgViewer->setViewButtonClicked(false);
@@ -126,7 +126,7 @@ void Visualizer::onSketchButtonClicked()
 void Visualizer::onViewButtonClicked()
 {
     setPlaneButtonsEnabled(false);
-    setSaveAndClearButtonsEnabled(true);
+    setSaveAndDeleteButtonsEnabled(true);
     setPrimitivesButtonsEnabled(false);
 
     // Set mViewButtonClicked to true
@@ -135,7 +135,7 @@ void Visualizer::onViewButtonClicked()
 
 void Visualizer::onXYButtonClicked()
 {
-    setSaveAndClearButtonsEnabled(true);
+    setSaveAndDeleteButtonsEnabled(true);
     // Implementation for XY button click
     setPrimitivesButtonsEnabled(true);
     setPlaneToXY();
@@ -143,7 +143,7 @@ void Visualizer::onXYButtonClicked()
 
 void Visualizer::onYZButtonClicked()
 {
-    setSaveAndClearButtonsEnabled(true);
+    setSaveAndDeleteButtonsEnabled(true);
     // Implementation for YZ button click
     setPrimitivesButtonsEnabled(true);
     setYZPlaneToXY();
@@ -151,7 +151,7 @@ void Visualizer::onYZButtonClicked()
 
 void Visualizer::onXZButtonClicked()
 {
-    setSaveAndClearButtonsEnabled(true);
+    setSaveAndDeleteButtonsEnabled(true);
     // Implementation for XZ button click
     setPrimitivesButtonsEnabled(true);
     setXZPlaneToXY();
@@ -224,7 +224,7 @@ void Visualizer::onSaveButtonClicked()
     renderPrimitiveFile(primitivesNode);
 }
 
-void Visualizer::onClearButtonClicked()
+void Visualizer::onDeleteButtonClicked()
 {
     mOsgViewer->clearDrawables(); // Remove all primitives
 }
@@ -236,10 +236,10 @@ void Visualizer::setPlaneButtonsEnabled(bool enabled)
     mXZButton->setEnabled(enabled);
 }
 
-void Visualizer::setSaveAndClearButtonsEnabled(bool enabled)
+void Visualizer::setSaveAndDeleteButtonsEnabled(bool enabled)
 {
     mSaveButton->setEnabled(enabled);
-    mClearButton->setEnabled(enabled);
+    mDeleteButton->setEnabled(enabled);
 }
 
 void Visualizer::setPrimitivesButtonsEnabled(bool enabled)

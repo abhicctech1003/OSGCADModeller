@@ -54,7 +54,7 @@ constexpr auto qt_meta_stringdata_CLASSVisualizerENDCLASS = QtMocHelpers::string
     "onEllipseButtonClicked",
     "onArcButtonClicked",
     "onSaveButtonClicked",
-    "onClearButtonClicked"
+    "onDeleteButtonClicked"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSVisualizerENDCLASS_t {
@@ -72,7 +72,7 @@ struct qt_meta_stringdata_CLASSVisualizerENDCLASS_t {
     char stringdata10[23];
     char stringdata11[19];
     char stringdata12[20];
-    char stringdata13[21];
+    char stringdata13[22];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSVisualizerENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -91,7 +91,7 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSVisualizerENDCLASS_t qt_meta_st
         QT_MOC_LITERAL(171, 22),  // "onEllipseButtonClicked"
         QT_MOC_LITERAL(194, 18),  // "onArcButtonClicked"
         QT_MOC_LITERAL(213, 19),  // "onSaveButtonClicked"
-        QT_MOC_LITERAL(233, 20)   // "onClearButtonClicked"
+        QT_MOC_LITERAL(233, 21)   // "onDeleteButtonClicked"
     },
     "Visualizer",
     "onSketchButtonClicked",
@@ -106,7 +106,7 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSVisualizerENDCLASS_t qt_meta_st
     "onEllipseButtonClicked",
     "onArcButtonClicked",
     "onSaveButtonClicked",
-    "onClearButtonClicked"
+    "onDeleteButtonClicked"
 };
 #undef QT_MOC_LITERAL
 #endif // !QT_MOC_HAS_STRING_DATA
@@ -187,7 +187,7 @@ Q_CONSTINIT const QMetaObject Visualizer::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onSaveButtonClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'onClearButtonClicked'
+        // method 'onDeleteButtonClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -210,7 +210,7 @@ void Visualizer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 8: _t->onEllipseButtonClicked(); break;
         case 9: _t->onArcButtonClicked(); break;
         case 10: _t->onSaveButtonClicked(); break;
-        case 11: _t->onClearButtonClicked(); break;
+        case 11: _t->onDeleteButtonClicked(); break;
         default: ;
         }
     }

@@ -26,12 +26,12 @@ private slots:
     void onEllipseButtonClicked();
     void onArcButtonClicked();
     void onSaveButtonClicked();
-    void onClearButtonClicked();
+    void onDeleteButtonClicked();
 
 private:
     void setupUi();
     void setPlaneButtonsEnabled(bool enabled);
-    void setSaveAndClearButtonsEnabled(bool enabled);
+    void setSaveAndDeleteButtonsEnabled(bool enabled);
     void setPrimitivesButtonsEnabled(bool enabled);
     void setButtonColor(QPushButton* button, const QColor& color);
     void setSquareButton(QPushButton* button);
@@ -55,7 +55,7 @@ private:
     QPushButton* mEllipseButton;
     QPushButton* mArcButton;
     QPushButton* mSaveButton;
-    QPushButton* mClearButton;
+    QPushButton* mDeleteButton;
 
     QMainWindow mWindow;
     OpenSceneGraphViewer* mOsgViewer;
