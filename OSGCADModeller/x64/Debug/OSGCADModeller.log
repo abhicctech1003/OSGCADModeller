@@ -1,5 +1,8 @@
-﻿  moc headers\Visualizer.h
-  main.cpp
+﻿  OsgFileWriter.cpp
+  Primitives.cpp
   Visualizer.cpp
+  OpenSceneGraphViewer.cpp
+  main.cpp
+  moc_OpenSceneGraphViewer.cpp
   moc_Visualizer.cpp
-  OSGCADModeller.vcxproj -> E:\Abhishek\12-Evaluation_Project - Copy\OSGCADModeller\x64\Debug\OSGCADModeller.exe
+  OSGCADModeller.vcxproj -> E:\Abhishek\12-EvaluationProject\OSGCADModeller\x64\Debug\OSGCADModeller.exe

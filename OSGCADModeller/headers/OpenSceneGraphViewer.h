@@ -1,21 +1,27 @@
 #pragma once
 
+#include "ui_OSGCADModeller.h"
 #include <QtWidgets/QWidget>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/TrackballManipulator>
 #include <QOpenGLWidget>
-#include "ui_OSGCADModeller.h"
 
 class OpenSceneGraphViewer : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
-    OpenSceneGraphViewer(qreal scaleX, qreal scaleY, QWidget* parent = 0);
+    OpenSceneGraphViewer(QWidget* parent = 0);
     ~OpenSceneGraphViewer();
 
-    void addDrawable(osg::Drawable* drawable);
+    //void addDrawable(osg::Drawable* drawable);
+    void setViewButtonClicked(bool clicked);
+    void addDrawable(osg::Node* node);
+    void clearDrawables();
+    osg::Node* getSceneData() const;
+    void updateSceneData(osg::Node* newSceneData);
+    osg::Node* getSceneGraph() const;
 
 protected:
     void paintGL();
@@ -23,15 +29,15 @@ protected:
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
+    virtual void wheelEvent(QWheelEvent* event) override;
     bool event(QEvent* event);
-    
-
-private:
     osgGA::EventQueue* getEventQueue() const;
 
+private:
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> mOsgGraphicsViewer;
     osg::ref_ptr<osgViewer::Viewer> mViewer;
     osg::ref_ptr<osg::Geode> mGeode;
-    qreal m_scaleX;
-    qreal m_scaleY;
+    qreal m_scale;
+    bool mViewButtonClicked = false;
+    osg::ref_ptr<osg::Node> mSceneGraph;
 };

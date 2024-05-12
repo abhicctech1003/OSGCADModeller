@@ -113,6 +113,7 @@ osgUtild.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\OsgFileWriter.cpp" />
     <ClCompile Include="src\Primitives.cpp" />
     <ClCompile Include="src\Visualizer.cpp">
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
@@ -128,6 +129,7 @@ osgUtild.lib;%(AdditionalDependencies)</AdditionalDependencies>
     <ClCompile Include="main.cpp" />
     <None Include="OSGCADModeller.ico" />
     <ResourceCompile Include="OSGCADModeller.rc" />
+    <ClInclude Include="headers\OsgFileWriter.h" />
     <ClInclude Include="headers\Primitives.h" />
     <ClInclude Include="headers\stdafx.h" />
     <ClCompile Include="src\stdafx.cpp">

@@ -2,13 +2,22 @@
 #include "Visualizer.h"
 #include "OpenSceneGraphViewer.h"
 #include "Primitives.h"
+#include "OsgFileWriter.h"
+#include <osg/MatrixTransform>
+#include <osgViewer/Viewer>
+#include <osgViewer/ViewerEventHandlers>
+#include <osgDB/ReaderWriter>
+#include <osgDB/WriteFile>
+#include <osg/ShapeDrawable>
+#include <osgDB/ReadFile>
 
 Visualizer::Visualizer(QWidget* parent) : QMainWindow(parent)
 {
     setupUi();
     // Initially disable the additional buttons
     setPlaneButtonsEnabled(false);
-    setFunctionalityButtonsEnabled(false);
+    setSaveAndClearButtonsEnabled(false);
+    setPrimitivesButtonsEnabled(false);
 }
 
 Visualizer::~Visualizer()
@@ -16,13 +25,9 @@ Visualizer::~Visualizer()
 
 void Visualizer::setupUi()
 {
-
     mWindow.resize(600, 600);
-
-
     mainLayout = new QVBoxLayout;
-
-    mOsgViewer = new OpenSceneGraphViewer(1, 1, &mWindow);
+    mOsgViewer = new OpenSceneGraphViewer(&mWindow);
 
     // Create toggle buttons
     mSketchButton = createButton("Sketch", Qt::white);
@@ -112,67 +117,116 @@ QPushButton* Visualizer::createButton(const QString& text, const QColor& color)
 void Visualizer::onSketchButtonClicked()
 {
     setPlaneButtonsEnabled(true);
-    setFunctionalityButtonsEnabled(false);
+    setSaveAndClearButtonsEnabled(true);
+    setPrimitivesButtonsEnabled(false);
+
+    mOsgViewer->setViewButtonClicked(false);
 }
 
 void Visualizer::onViewButtonClicked()
 {
     setPlaneButtonsEnabled(false);
-    setFunctionalityButtonsEnabled(false);
+    setSaveAndClearButtonsEnabled(true);
+    setPrimitivesButtonsEnabled(false);
+
+    // Set mViewButtonClicked to true
+    mOsgViewer->setViewButtonClicked(true);
 }
 
 void Visualizer::onXYButtonClicked()
 {
+    setSaveAndClearButtonsEnabled(true);
     // Implementation for XY button click
-    setFunctionalityButtonsEnabled(true);
+    setPrimitivesButtonsEnabled(true);
+    setPlaneToXY();
 }
 
 void Visualizer::onYZButtonClicked()
 {
+    setSaveAndClearButtonsEnabled(true);
     // Implementation for YZ button click
-    setFunctionalityButtonsEnabled(true);
+    setPrimitivesButtonsEnabled(true);
+    setYZPlaneToXY();
 }
 
 void Visualizer::onXZButtonClicked()
 {
+    setSaveAndClearButtonsEnabled(true);
     // Implementation for XZ button click
-    setFunctionalityButtonsEnabled(true);
+    setPrimitivesButtonsEnabled(true);
+    setXZPlaneToXY();
 }
 
 void Visualizer::onPointButtonClicked()
 {
-
-    mOsgViewer->addDrawable(Primitives::createPoint(osg::Vec3(4.0f, 1.0f, 0.0f))); // Call createPoint function
+    osg::Geode* pointGeode = Primitives::createPoint(osg::Vec3(2.0f, 1.0f, 0.0f));
+    mOsgViewer->addDrawable(pointGeode);
+    mOsgViewer->update();
 }
 
 void Visualizer::onLineButtonClicked()
 {
-    mOsgViewer->addDrawable(Primitives::createLine(osg::Vec3(0.0f, 0.0f, 0.0f), osg::Vec3(6.0f, 0.0f, 0.0f))); // Call createLine function
+    osg::Geode* lineGeode = Primitives::createLine(osg::Vec3(-1.0f, 0.0f, 0.0f), osg::Vec3(1.0f, 0.0f, 0.0f));
+    mOsgViewer->addDrawable(lineGeode);
+    mOsgViewer->update();
 }
 
 void Visualizer::onCircleButtonClicked()
 {
-    mOsgViewer->addDrawable(Primitives::createCircle(3.0f, 36)); // Call createCircle function
+    osg::Geode* circleGeode = Primitives::createCircle(0.05f, 36);
+    mOsgViewer->addDrawable(circleGeode);
+    mOsgViewer->update();
 }
 
 void Visualizer::onEllipseButtonClicked()
 {
-    mOsgViewer->addDrawable(Primitives::createEllipse(4.0f, 2.0f, 36)); // Call createEllipse function
+    osg::Geode* ellipseGeode = Primitives::createEllipse(0.1f, 0.05, 36);
+    mOsgViewer->addDrawable(ellipseGeode);
+    mOsgViewer->update();
 }
 
 void Visualizer::onArcButtonClicked()
 {
-    mOsgViewer->addDrawable(Primitives::createArc(3.0f, osg::PI / 4.0f, 3.0f * osg::PI / 4.0f, 36)); // Call createArc function
+    osg::Geode* arcGeode = Primitives::createArc(45.0f, 1.0f, osg::PI / 4.0f, 3.0f * osg::PI / 4.0f, 36);
+    mOsgViewer->addDrawable(arcGeode);
+    mOsgViewer->update();
+
 }
 
 void Visualizer::onSaveButtonClicked()
 {
-    
+    osg::ref_ptr<osg::Group> sceneGroup = mOsgViewer->getSceneData()->asGroup();
+    if (!sceneGroup) {
+        std::cerr << "Error: Scene data is not a group" << std::endl;
+        return;
+    }
+
+    std::vector<osg::ref_ptr<osg::Geode>> geodes;
+
+    for (unsigned int i = 0; i < sceneGroup->getNumChildren(); ++i) 
+    {
+        osg::ref_ptr<osg::Node> childNode = sceneGroup->getChild(i);
+        osg::ref_ptr<osg::Geode> geode = childNode->asGeode();
+        if (geode) 
+        {
+            geodes.push_back(geode);
+        }
+        else 
+        {
+            std::cerr << "Error: Child node " << i << " is not a geode" << std::endl;
+        }
+    }
+
+    // Call createPrimitivesNode with the vector of geodes
+    osg::Node* primitivesNode = createPrimitivesNode(geodes);
+
+    // Render primitives
+    renderPrimitiveFile(primitivesNode);
 }
 
 void Visualizer::onClearButtonClicked()
 {
-    
+    mOsgViewer->clearDrawables(); // Remove all primitives
 }
 
 void Visualizer::setPlaneButtonsEnabled(bool enabled)
@@ -182,15 +236,19 @@ void Visualizer::setPlaneButtonsEnabled(bool enabled)
     mXZButton->setEnabled(enabled);
 }
 
-void Visualizer::setFunctionalityButtonsEnabled(bool enabled)
+void Visualizer::setSaveAndClearButtonsEnabled(bool enabled)
+{
+    mSaveButton->setEnabled(enabled);
+    mClearButton->setEnabled(enabled);
+}
+
+void Visualizer::setPrimitivesButtonsEnabled(bool enabled)
 {
     mPointButton->setEnabled(enabled);
     mLineButton->setEnabled(enabled);
     mCircleButton->setEnabled(enabled);
     mEllipseButton->setEnabled(enabled);
     mArcButton->setEnabled(enabled);
-    mSaveButton->setEnabled(enabled);
-    mClearButton->setEnabled(enabled);
 }
 
 void Visualizer::setButtonColor(QPushButton* button, const QColor& color)
@@ -201,5 +259,107 @@ void Visualizer::setButtonColor(QPushButton* button, const QColor& color)
 void Visualizer::setSquareButton(QPushButton* button)
 {
     button->setFixedSize(100, 60); // Set size to create square shape
+}
+
+void Visualizer::setPlaneToXY()
+{
+    // Apply the rotation to the children of the original scene data
+    osg::Node* originalSceneData = mOsgViewer->getSceneData();
+    osg::ref_ptr<osg::MatrixTransform> rotationTransform = new osg::MatrixTransform;
+    osg::Matrix rotationMatrix;
+
+    if (mYZPlaneEnabled == true)
+    {
+        rotationMatrix.makeRotate(osg::DegreesToRadians(90.0), osg::Vec3(1.0, 0.0, 0.0));
+    }
+    else if (mXZPlaneEnabled == true)
+    {
+        rotationMatrix.makeRotate(osg::DegreesToRadians(-90.0), osg::Vec3(0.0, 1.0, 0.0));
+    }
+
+    rotationTransform->setMatrix(rotationMatrix);
+    rotationTransform->addChild(originalSceneData);
+
+    // Create a new scene data with the rotated plane
+    osg::ref_ptr<osg::Group> root = new osg::Group;
+    root->addChild(rotationTransform);
+
+    // Update the scene data in the viewer
+    mOsgViewer->updateSceneData(root);
+}
+
+void Visualizer::setYZPlaneToXY()
+{
+    // Apply the rotation to the children of the original scene data
+    osg::Node* originalSceneData = mOsgViewer->getSceneData();
+    osg::ref_ptr<osg::MatrixTransform> rotationTransform = new osg::MatrixTransform;
+    osg::Matrix rotationMatrix;
+    rotationMatrix.makeRotate(osg::DegreesToRadians(90.0), osg::Vec3(1.0, 0.0, 0.0)); // Rotate 90 degrees around X axis
+    rotationTransform->setMatrix(rotationMatrix);
+    rotationTransform->addChild(originalSceneData);
+
+    // Create a new scene data with the rotated plane
+    osg::ref_ptr<osg::Group> root = new osg::Group;
+    root->addChild(rotationTransform);
+
+    // Update the scene data in the viewer
+    mOsgViewer->updateSceneData(root);
+
+    mYZPlaneEnabled = true;
+}
+
+void Visualizer::setXZPlaneToXY()
+{
+    // Apply the rotation to the children of the original scene data
+    osg::Node* originalSceneData = mOsgViewer->getSceneData();
+    osg::ref_ptr<osg::MatrixTransform> rotationTransform = new osg::MatrixTransform;
+    osg::Matrix rotationMatrix;
+    rotationMatrix.makeRotate(osg::DegreesToRadians(-90.0), osg::Vec3(0.0, 1.0, 0.0)); // Rotate -90 degrees around Y axis
+    rotationTransform->setMatrix(rotationMatrix);
+    rotationTransform->addChild(originalSceneData);
+
+    // Create a new scene data with the rotated plane
+    osg::ref_ptr<osg::Group> root = new osg::Group;
+    root->addChild(rotationTransform);
+
+    // Update the scene data in the viewer
+    mOsgViewer->updateSceneData(root);
+
+    mXZPlaneEnabled = true;
+}
+
+osg::Node* Visualizer::createPrimitivesNode(const std::vector<osg::ref_ptr<osg::Geode>>& geodes)
+{
+    osg::ref_ptr<osg::Group> root = new osg::Group;
+
+    // Create a Geode to hold the primitives
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+
+    // Add existing primitives to the geode
+    for (const auto& g : geodes) {
+        if (g.valid())
+            geode->addChild(g);
+    }
+
+    root->addChild(geode);
+
+    // Return the root node containing all the primitives
+    return root.release();
+}
+
+void Visualizer::renderPrimitiveFile(osg::Node* primitivesNode)
+{
+    osg::ref_ptr<osgDB::ReaderWriter::Options> options = new osgDB::ReaderWriter::Options;
+    options->setOptionString("noBinary");
+    // Write the node to an .osg file
+    bool success = osgDB::writeNodeFile(*primitivesNode, "Primitives.osg", options.get());
+    if (success) 
+    {
+        std::cout << "Primitives saved to Primitives.osg" << std::endl;
+    }
+    else 
+    {
+        std::cerr << "Failed to save primitives" << std::endl;
+    }
 }
 
