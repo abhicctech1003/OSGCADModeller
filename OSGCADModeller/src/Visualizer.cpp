@@ -29,12 +29,36 @@ void Visualizer::setupUi()
     mainLayout = new QVBoxLayout;
     mOsgViewer = new OpenSceneGraphViewer(&mWindow);
 
+    // Create a splitter to hold the viewer and the primitive list
+    QSplitter* splitter = new QSplitter(Qt::Horizontal);
+    QVBoxLayout* rightLayout = new QVBoxLayout;
+
     // Create toggle buttons
-    mSketchButton = createButton("Sketch", Qt::white);
-    mViewButton = createButton("View", Qt::white);
-    mXYButton = createButton("XY", Qt::yellow);
-    mYZButton = createButton("YZ", Qt::yellow);
-    mXZButton = createButton("XZ", Qt::yellow);
+    mSketchButton = createToolButton("Sketch", Qt::white);
+    mViewButton = createToolButton("View", Qt::white);
+    mXYButton = createToolButton("XY", Qt::yellow);
+    mYZButton = createToolButton("YZ", Qt::yellow);
+    mXZButton = createToolButton("XZ", Qt::yellow);
+
+    // Set checkable property for Sketch and View buttons
+    mSketchButton->setCheckable(true);
+    mViewButton->setCheckable(true);
+    mXYButton->setCheckable(true);
+    mYZButton->setCheckable(true);
+    mXZButton->setCheckable(true);
+
+    // Create button group for Sketch and View buttons
+    QButtonGroup* toggleGroup = new QButtonGroup(this);
+    toggleGroup->setExclusive(true);
+    toggleGroup->addButton(mSketchButton);
+    toggleGroup->addButton(mViewButton);
+
+    // Create button group for Sketch and View buttons
+    QButtonGroup* toggleGroup1 = new QButtonGroup(this);
+    toggleGroup1->setExclusive(true);
+    toggleGroup1->addButton(mXYButton);
+    toggleGroup1->addButton(mYZButton);
+    toggleGroup1->addButton(mXZButton);
 
     // Create additional buttons
     mPointButton = createButton("Point", QColor(135, 206, 235)); // Sky blue
@@ -46,25 +70,26 @@ void Visualizer::setupUi()
     mDeleteButton = createButton("Delete", Qt::red);
 
     // Set size policies to make buttons square-shaped
-    setSquareButton(mSketchButton);
-    setSquareButton(mViewButton);
-    setSquareButton(mXYButton);
-    setSquareButton(mYZButton);
-    setSquareButton(mXZButton);
-    setSquareButton(mPointButton);
-    setSquareButton(mLineButton);
-    setSquareButton(mCircleButton);
-    setSquareButton(mEllipseButton);
-    setSquareButton(mArcButton);
-    setSquareButton(mSaveButton);
-    setSquareButton(mDeleteButton);
+    setToolButtonSize(mSketchButton);
+    setToolButtonSize(mViewButton);
+    setToolButtonSize(mXYButton);
+    setToolButtonSize(mYZButton);
+    setToolButtonSize(mXZButton);
+
+    setButtonSize(mPointButton);
+    setButtonSize(mLineButton);
+    setButtonSize(mCircleButton);
+    setButtonSize(mEllipseButton);
+    setButtonSize(mArcButton);
+    setButtonSize(mSaveButton);
+    setButtonSize(mDeleteButton);
 
     // Connect toggle buttons to slots
-    connect(mSketchButton, &QPushButton::clicked, this, &Visualizer::onSketchButtonClicked);
-    connect(mViewButton, &QPushButton::clicked, this, &Visualizer::onViewButtonClicked);
-    connect(mXYButton, &QPushButton::clicked, this, &Visualizer::onXYButtonClicked);
-    connect(mYZButton, &QPushButton::clicked, this, &Visualizer::onYZButtonClicked);
-    connect(mXZButton, &QPushButton::clicked, this, &Visualizer::onXZButtonClicked);
+    connect(mSketchButton, &QToolButton::clicked, this, &Visualizer::onSketchButtonClicked);
+    connect(mViewButton, &QToolButton::clicked, this, &Visualizer::onViewButtonClicked);
+    connect(mXYButton, &QToolButton::clicked, this, &Visualizer::onXYButtonClicked);
+    connect(mYZButton, &QToolButton::clicked, this, &Visualizer::onYZButtonClicked);
+    connect(mXZButton, &QToolButton::clicked, this, &Visualizer::onXZButtonClicked);
 
     // Connect additional buttons to slots
     connect(mPointButton, &QPushButton::clicked, this, &Visualizer::onPointButtonClicked);
@@ -74,6 +99,21 @@ void Visualizer::setupUi()
     connect(mArcButton, &QPushButton::clicked, this, &Visualizer::onArcButtonClicked);
     connect(mSaveButton, &QPushButton::clicked, this, &Visualizer::onSaveButtonClicked);
     connect(mDeleteButton, &QPushButton::clicked, this, &Visualizer::onDeleteButtonClicked);
+
+    // Create QLabel for displaying plane text
+    mPlaneTextLabel = new QLabel(this);
+    mPlaneTextLabel->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    QFont font = mPlaneTextLabel->font();
+    font.setPointSize(10); // Adjust the font size as needed
+    mPlaneTextLabel->setFont(font);
+    mPlaneTextLabel->setText("");
+    mOsgViewer->addPlaneTextLabel(mPlaneTextLabel);
+
+    // To Add Layout
+    mPrimitiveListWidget = new QListWidget(this);
+    rightLayout->addWidget(mPrimitiveListWidget);
+    QWidget* rightWidget = new QWidget;
+    rightWidget->setLayout(rightLayout);
 
     // Create layout
     mGridLayout = new QGridLayout(this);
@@ -91,9 +131,22 @@ void Visualizer::setupUi()
     mGridLayout->addWidget(mArcButton, 0, 9);
     mGridLayout->addWidget(mSaveButton, 0, 10);
     mGridLayout->addWidget(mDeleteButton, 0, 11);
+    mGridLayout->setSpacing(5); // Set spacing between buttons
 
     mainLayout->addLayout(mGridLayout);
-    mainLayout->addWidget(mOsgViewer);
+
+    // Add the viewer and the layout to the splitter
+    splitter->addWidget(mOsgViewer);
+    splitter->addWidget(new QWidget); // Placeholder to maintain spacing
+    splitter->addWidget(rightWidget);
+
+    splitter->setStretchFactor(0, 1000); // Viewer
+    splitter->setStretchFactor(1, 1); // Buttons
+
+    splitter->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(10);
+    // Add the splitter to the main layout
+    mainLayout->addWidget(splitter);
 
     mWidget = new QWidget(this);
     mWidget->setLayout(mainLayout);
@@ -108,6 +161,17 @@ QPushButton* Visualizer::createButton(const QString& text, const QColor& color)
 {
     QPushButton* button = new QPushButton(text, this);
     setButtonColor(button, color);
+    QFont font = button->font();
+    font.setPointSize(12); // Adjust the font size as needed
+    button->setFont(font);
+    return button;
+}
+
+QToolButton* Visualizer::createToolButton(const QString& text, const QColor& color)
+{
+    QToolButton* button = new QToolButton(this);
+    button->setText(text);
+    setToolButtonColor(button, color);
     QFont font = button->font();
     font.setPointSize(12); // Adjust the font size as needed
     button->setFont(font);
@@ -139,6 +203,7 @@ void Visualizer::onXYButtonClicked()
     // Implementation for XY button click
     setPrimitivesButtonsEnabled(true);
     setPlaneToXY();
+    mPlaneTextLabel->setText("XY Plane"); // Update the text
 }
 
 void Visualizer::onYZButtonClicked()
@@ -147,6 +212,8 @@ void Visualizer::onYZButtonClicked()
     // Implementation for YZ button click
     setPrimitivesButtonsEnabled(true);
     setYZPlaneToXY();
+
+    mPlaneTextLabel->setText("YZ Plane"); // Update the text
 }
 
 void Visualizer::onXZButtonClicked()
@@ -155,6 +222,8 @@ void Visualizer::onXZButtonClicked()
     // Implementation for XZ button click
     setPrimitivesButtonsEnabled(true);
     setXZPlaneToXY();
+
+    mPlaneTextLabel->setText("XZ Plane"); // Update the text
 }
 
 void Visualizer::onPointButtonClicked()
@@ -162,6 +231,8 @@ void Visualizer::onPointButtonClicked()
     osg::Geode* pointGeode = Primitives::createPoint(osg::Vec3(2.0f, 1.0f, 0.0f));
     mOsgViewer->addDrawable(pointGeode);
     mOsgViewer->update();
+
+    mPrimitiveListWidget->addItem("Point");
 }
 
 void Visualizer::onLineButtonClicked()
@@ -169,6 +240,8 @@ void Visualizer::onLineButtonClicked()
     osg::Geode* lineGeode = Primitives::createLine(osg::Vec3(-1.0f, 0.0f, 0.0f), osg::Vec3(1.0f, 0.0f, 0.0f));
     mOsgViewer->addDrawable(lineGeode);
     mOsgViewer->update();
+
+    mPrimitiveListWidget->addItem("Line");
 }
 
 void Visualizer::onCircleButtonClicked()
@@ -176,6 +249,8 @@ void Visualizer::onCircleButtonClicked()
     osg::Geode* circleGeode = Primitives::createCircle(0.05f, 36);
     mOsgViewer->addDrawable(circleGeode);
     mOsgViewer->update();
+
+    mPrimitiveListWidget->addItem("Circle");
 }
 
 void Visualizer::onEllipseButtonClicked()
@@ -183,6 +258,8 @@ void Visualizer::onEllipseButtonClicked()
     osg::Geode* ellipseGeode = Primitives::createEllipse(0.1f, 0.05, 36);
     mOsgViewer->addDrawable(ellipseGeode);
     mOsgViewer->update();
+
+    mPrimitiveListWidget->addItem("Ellipse");
 }
 
 void Visualizer::onArcButtonClicked()
@@ -190,6 +267,8 @@ void Visualizer::onArcButtonClicked()
     osg::Geode* arcGeode = Primitives::createArc(45.0f, 1.0f, osg::PI / 4.0f, 3.0f * osg::PI / 4.0f, 36);
     mOsgViewer->addDrawable(arcGeode);
     mOsgViewer->update();
+
+    mPrimitiveListWidget->addItem("Arc");
 
 }
 
@@ -203,15 +282,15 @@ void Visualizer::onSaveButtonClicked()
 
     std::vector<osg::ref_ptr<osg::Geode>> geodes;
 
-    for (unsigned int i = 0; i < sceneGroup->getNumChildren(); ++i) 
+    for (unsigned int i = 0; i < sceneGroup->getNumChildren(); ++i)
     {
         osg::ref_ptr<osg::Node> childNode = sceneGroup->getChild(i);
         osg::ref_ptr<osg::Geode> geode = childNode->asGeode();
-        if (geode) 
+        if (geode)
         {
             geodes.push_back(geode);
         }
-        else 
+        else
         {
             std::cerr << "Error: Child node " << i << " is not a geode" << std::endl;
         }
@@ -227,6 +306,8 @@ void Visualizer::onSaveButtonClicked()
 void Visualizer::onDeleteButtonClicked()
 {
     mOsgViewer->clearDrawables(); // Remove all primitives
+
+    mPrimitiveListWidget->clear();
 }
 
 void Visualizer::setPlaneButtonsEnabled(bool enabled)
@@ -251,16 +332,31 @@ void Visualizer::setPrimitivesButtonsEnabled(bool enabled)
     mArcButton->setEnabled(enabled);
 }
 
+// To set button color
 void Visualizer::setButtonColor(QPushButton* button, const QColor& color)
 {
     button->setStyleSheet("background-color: " + color.name() + ";");
 }
 
-void Visualizer::setSquareButton(QPushButton* button)
+// To set tool button color
+void Visualizer::setToolButtonColor(QToolButton* button, const QColor& color)
+{
+    button->setStyleSheet("background-color: " + color.name() + ";");
+}
+
+// To set button size
+void Visualizer::setButtonSize(QPushButton* button)
 {
     button->setFixedSize(100, 60); // Set size to create square shape
 }
 
+// To set tool button size
+void Visualizer::setToolButtonSize(QToolButton* button)
+{
+    button->setFixedSize(100, 60); // Set size to create square shape
+}
+
+// To set XY plane as rendering plane 
 void Visualizer::setPlaneToXY()
 {
     // Apply the rotation to the children of the original scene data
@@ -288,6 +384,7 @@ void Visualizer::setPlaneToXY()
     mOsgViewer->updateSceneData(root);
 }
 
+// To set YZ plane as rendering plane 
 void Visualizer::setYZPlaneToXY()
 {
     // Apply the rotation to the children of the original scene data
@@ -308,6 +405,7 @@ void Visualizer::setYZPlaneToXY()
     mYZPlaneEnabled = true;
 }
 
+// To set XZ plane as rendering plane  
 void Visualizer::setXZPlaneToXY()
 {
     // Apply the rotation to the children of the original scene data
@@ -328,6 +426,7 @@ void Visualizer::setXZPlaneToXY()
     mXZPlaneEnabled = true;
 }
 
+// For saving the file
 osg::Node* Visualizer::createPrimitivesNode(const std::vector<osg::ref_ptr<osg::Geode>>& geodes)
 {
     osg::ref_ptr<osg::Group> root = new osg::Group;
@@ -347,19 +446,19 @@ osg::Node* Visualizer::createPrimitivesNode(const std::vector<osg::ref_ptr<osg::
     return root.release();
 }
 
+// For saving the file
 void Visualizer::renderPrimitiveFile(osg::Node* primitivesNode)
 {
     osg::ref_ptr<osgDB::ReaderWriter::Options> options = new osgDB::ReaderWriter::Options;
     options->setOptionString("noBinary");
     // Write the node to an .osg file
     bool success = osgDB::writeNodeFile(*primitivesNode, "Primitives.osg", options.get());
-    if (success) 
+    if (success)
     {
         std::cout << "Primitives saved to Primitives.osg" << std::endl;
     }
-    else 
+    else
     {
         std::cerr << "Failed to save primitives" << std::endl;
     }
 }
-

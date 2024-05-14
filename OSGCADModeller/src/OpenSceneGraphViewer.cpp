@@ -6,6 +6,9 @@
 #include <QOpenGLWidget>
 #include <osg/ShapeDrawable>
 #include <osgDB/ReadFile>
+#include <osgUtil/LineSegmentIntersector>
+#include <osg/Material>
+#include <osgGA/GUIEventHandler>
 
 OpenSceneGraphViewer::OpenSceneGraphViewer(QWidget* parent)
     : QOpenGLWidget(parent),
@@ -46,6 +49,8 @@ OpenSceneGraphViewer::OpenSceneGraphViewer(QWidget* parent)
     // Create geode to hold primitives
     mGeode = new osg::Geode;
     mViewer->setSceneData(mGeode);
+
+    mLayout = new QVBoxLayout;
 }
 
 OpenSceneGraphViewer::~OpenSceneGraphViewer()
@@ -100,6 +105,8 @@ void OpenSceneGraphViewer::mousePressEvent(QMouseEvent* event)
             break;
         }
         this->getEventQueue()->mouseButtonPress(event->x() * m_scale, event->y() * m_scale, button);
+
+
     }
 }
 
@@ -170,7 +177,31 @@ void OpenSceneGraphViewer::updateSceneData(osg::Node* newSceneData)
     mViewer->setSceneData(newSceneData);
 }
 
-osg::Node* OpenSceneGraphViewer::getSceneGraph() const 
+osg::Node* OpenSceneGraphViewer::getSceneGraph() const
 {
-    return mSceneGraph.get(); 
+    return mSceneGraph.get();
 }
+
+void OpenSceneGraphViewer::addPlaneTextLabel(QLabel* label)
+{
+    QLayout* viewerLayout = layout(); // Assuming mLayout is the layout of OSG viewer
+    if (viewerLayout) {
+        viewerLayout->addWidget(label);
+        viewerLayout->setAlignment(label, Qt::AlignRight | Qt::AlignTop);
+    }
+    else {
+        QWidget* centralWidget = findChild<QWidget*>(); // Assuming there's only one central widget
+        if (centralWidget && centralWidget->layout()) {
+            QLayout* centralLayout = centralWidget->layout();
+            centralLayout->addWidget(label);
+            centralLayout->setAlignment(label, Qt::AlignRight | Qt::AlignTop);
+        }
+        else {
+            QWidget::setLayout(new QVBoxLayout); // Create a layout for the viewer
+            viewerLayout = layout();
+            viewerLayout->addWidget(label);
+            viewerLayout->setAlignment(label, Qt::AlignRight | Qt::AlignTop);
+        }
+    }
+}
+

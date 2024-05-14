@@ -34,21 +34,26 @@ private:
     void setSaveAndDeleteButtonsEnabled(bool enabled);
     void setPrimitivesButtonsEnabled(bool enabled);
     void setButtonColor(QPushButton* button, const QColor& color);
-    void setSquareButton(QPushButton* button);
+    void setToolButtonColor(QToolButton* button, const QColor& color);
+    void setButtonSize(QPushButton* button);
+    void setToolButtonSize(QToolButton* button);
     QPushButton* createButton(const QString& text, const QColor& color);
+    QToolButton* createToolButton(const QString& text, const QColor& color);
     void setPlaneToXY();
     void setXZPlaneToXY();
     void setYZPlaneToXY();
     void renderPrimitiveFile(osg::Node* primitivesNode);
     osg::Node* createPrimitivesNode(const std::vector<osg::ref_ptr<osg::Geode>>& geodes);
 
+
     QWidget* mWidget;
     QGridLayout* mGridLayout;
-    QPushButton* mSketchButton;
-    QPushButton* mViewButton;
-    QPushButton* mXYButton;
-    QPushButton* mYZButton;
-    QPushButton* mXZButton;
+
+    QToolButton* mSketchButton;
+    QToolButton* mViewButton;
+    QToolButton* mXYButton;
+    QToolButton* mYZButton;
+    QToolButton* mXZButton;
     QPushButton* mPointButton;
     QPushButton* mLineButton;
     QPushButton* mCircleButton;
@@ -56,6 +61,9 @@ private:
     QPushButton* mArcButton;
     QPushButton* mSaveButton;
     QPushButton* mDeleteButton;
+    QLabel* mPlaneTextLabel;
+    QListWidget* mPrimitiveListWidget;
+    QVBoxLayout* mRightLayout;
 
     QMainWindow mWindow;
     OpenSceneGraphViewer* mOsgViewer;
