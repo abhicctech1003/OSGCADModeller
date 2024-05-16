@@ -86,5 +86,8 @@ private:
 
     bool mYZPlaneEnabled = false;
     bool mXZPlaneEnabled = false;
+    bool shouldUpdateDefaultValues = false;
+
+    osg::ref_ptr<osg::Group> mPrimitivesGroup;
 
 };

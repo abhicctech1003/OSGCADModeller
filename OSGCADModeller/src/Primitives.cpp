@@ -11,6 +11,25 @@
 #include <osg/Point>
 #include <osg/GL>
 
+// Define static member variables
+osg::Vec3 Primitives::defaultLineStart = osg::Vec3(-10.0f, 0.0f, 0.0f);
+osg::Vec3 Primitives::defaultLineEnd = osg::Vec3(10.0f, 0.0f, 0.0f);
+float Primitives::defaultCircleRadius = 1.0f;
+float Primitives::defaultEllipseMajorRadius = 1.0f;
+float Primitives::defaultEllipseMinorRadius = 0.5f;
+float Primitives::defaultArcRadiusX = 45.0f;
+float Primitives::defaultArcRadiusY = 1.0f;
+
+Primitives::Primitives()
+{
+    // Constructor
+}
+
+Primitives::~Primitives()
+{
+    // Destructor
+}
+
 // Function To Create a Point
 osg::Geode* Primitives::createPoint()
 {
@@ -68,13 +87,15 @@ osg::Geode* Primitives::createLine(const osg::Vec3& start, const osg::Vec3& end)
 }
 
 // Function To Create a Circle
-osg::Geode* Primitives::createCircle(float radius, int numSegments)
+osg::Geode* Primitives::createCircle(float radius)
 {
     // Implementation of createCircle function
     osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
 
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
     geom->setVertexArray(vertices);
+
+    int numSegments = 36;
 
     float angleIncrement = 2.0f * osg::PI / numSegments;
     for (int i = 0; i < numSegments; ++i) {
@@ -102,13 +123,15 @@ osg::Geode* Primitives::createCircle(float radius, int numSegments)
 }
 
 // Function To Create a Ellipse
-osg::Geode* Primitives::createEllipse(float majorRadius, float minorRadius, int numSegments)
+osg::Geode* Primitives::createEllipse(float majorRadius, float minorRadius)
 {
     // Implementation of createEllipse function
     osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
 
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
     geom->setVertexArray(vertices);
+
+    int numSegments = 36;
 
     float angleIncrement = 2.0f * osg::PI / numSegments;
     for (int i = 0; i < numSegments; ++i)
@@ -140,14 +163,18 @@ osg::Geode* Primitives::createEllipse(float majorRadius, float minorRadius, int 
     return geode.release();
 }
 
-// Function To Create a Arc
-osg::Geode* Primitives::createArc(float radiusX, float radiusY, float startAngle, float endAngle, int numSegments)
+
+osg::Geode* Primitives::createArc(float radiusX, float radiusY)
 {
     // Implementation of createArc function
     osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
 
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
     geom->setVertexArray(vertices);
+
+    float startAngle = osg::PI / 4.0f;
+    float endAngle = 3.0f * osg::PI / 4.0f;
+    int numSegments = 36;
 
     // Convert angles to radians
     startAngle = osg::DegreesToRadians(startAngle);
@@ -183,11 +210,37 @@ osg::Geode* Primitives::createArc(float radiusX, float radiusY, float startAngle
     return geode.release();
 }
 
-// Definition of static member variables
-osg::Vec3 Primitives::defaultLineStart = osg::Vec3(0.0f, 0.0f, 0.0f);
-osg::Vec3 Primitives::defaultLineEnd = osg::Vec3(1.0f, 1.0f, 0.0f);
-float Primitives::defaultCircleRadius = 1.0f;
-float Primitives::defaultEllipseMajorRadius = 1.0f;
-float Primitives::defaultEllipseMinorRadius = 0.5f;
-float Primitives::defaultArcRadiusX = 45.0f;
-float Primitives::defaultArcRadiusY = 1.0f;
+osg::Vec3 Primitives::getDefaultLineStart()
+{
+    return defaultLineStart;
+}
+
+osg::Vec3 Primitives::getDefaultLineEnd()
+{
+    return defaultLineEnd;
+}
+
+float Primitives::getDefaultCircleRadius()
+{
+    return defaultCircleRadius;
+}
+
+float Primitives::getDefaultEllipseMajorRadius()
+{
+    return defaultEllipseMajorRadius;
+}
+
+float Primitives::getDefaultEllipseMinorRadius()
+{
+    return defaultEllipseMinorRadius;
+}
+
+float Primitives::getDefaultArcRadiusX()
+{
+    return defaultArcRadiusX;
+}
+
+float Primitives::getDefaultArcRadiusY()
+{
+    return defaultArcRadiusY;
+}

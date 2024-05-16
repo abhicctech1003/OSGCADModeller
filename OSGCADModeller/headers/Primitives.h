@@ -1,11 +1,15 @@
 #pragma once
-
+#include<iostream>
 #include <osg/Geometry>
 #include <osg/Vec3>
+using namespace std;
 
 class Primitives
 {
 public:
+    Primitives();
+    ~Primitives();
+
     // Default parameter values for primitives
     static osg::Vec3 defaultLineStart;
     static osg::Vec3 defaultLineEnd;
@@ -17,9 +21,9 @@ public:
 
     static osg::Geode* createPoint();
     static osg::Geode* createLine(const osg::Vec3& start = defaultLineStart, const osg::Vec3& end = defaultLineEnd);
-    static osg::Geode* createCircle(float radius = defaultCircleRadius, int numSegments = 36);
-    static osg::Geode* createEllipse(float majorRadius = defaultEllipseMajorRadius, float minorRadius = defaultEllipseMinorRadius, int numSegments = 36);
-    static osg::Geode* createArc(float radiusX = defaultArcRadiusX, float radiusY = defaultArcRadiusY, float startAngle = osg::PI / 4.0f, float endAngle = 3.0f * osg::PI / 4.0f, int numSegments = 36);
+    static osg::Geode* createCircle(float radius = defaultCircleRadius);
+    static osg::Geode* createEllipse(float majorRadius = defaultEllipseMajorRadius, float minorRadius = defaultEllipseMinorRadius);
+    static osg::Geode* createArc(float radiusX = defaultArcRadiusX, float radiusY = defaultArcRadiusY);
 
     // Static member functions to set default values
     static void setDefaultLineStart(const osg::Vec3& start) { defaultLineStart = start; }
@@ -29,4 +33,12 @@ public:
     static void setDefaultEllipseMinorRadius(float minorRadius) { defaultEllipseMinorRadius = minorRadius; }
     static void setDefaultArcRadiusX(float radiusX) { defaultArcRadiusX = radiusX; }
     static void setDefaultArcRadiusY(float radiusY) { defaultArcRadiusY = radiusY; }
+
+    static osg::Vec3 getDefaultLineStart();
+    static osg::Vec3 getDefaultLineEnd();
+    static float getDefaultCircleRadius();
+    static float getDefaultEllipseMajorRadius();
+    static float getDefaultEllipseMinorRadius();
+    static float getDefaultArcRadiusX();
+    static float getDefaultArcRadiusY();
 };
