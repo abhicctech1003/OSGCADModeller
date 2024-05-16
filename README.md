@@ -71,7 +71,19 @@ The project is organized into the following folders:
 - Understanding of Open Scene Graph toolkit and OSG file formats
 
 ## Output Screenshots
-![Screenshot (305)](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/eb478275-d40d-44e3-aa0b-c7acf36cc3c8)
-![Screenshot (308)](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/f9b71041-51e2-4086-991a-88190f70d43e)
-![Screenshot (307)](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/70faa974-611c-4855-a3e6-24d7122954ea)
-![Screenshot (306)](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/9f95a0cf-59c4-4066-8ad5-c8a01117f221)
+- Point
+![01-Point](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/67d25d72-9200-414e-972e-12739d6f6682)
+
+- Line
+![02-Line](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/ed7bebaa-6347-48d9-a412-4bc2f719e7fd)
+
+-Circle
+![03-Circle](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/15b4f301-f1c7-4c0c-b23d-3257df50e423)
+
+-Ellipse
+![04-Ellipse](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/d517c4e4-5b66-4bbd-98fe-9dd2a11ae32c)
+
+-Arc
+![05-Arc](https://github.com/abhicctech1003/OSGCADModeller/assets/158149347/8e7d800e-ba99-49ea-a954-eb69b553d9b5)
+
+
