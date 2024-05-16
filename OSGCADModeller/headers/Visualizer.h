@@ -27,6 +27,8 @@ private slots:
     void onArcButtonClicked();
     void onSaveButtonClicked();
     void onDeleteButtonClicked();
+    void updateDefaultValues();
+    void onSetButtonClicked();
 
 private:
     void setupUi();
@@ -34,21 +36,26 @@ private:
     void setSaveAndDeleteButtonsEnabled(bool enabled);
     void setPrimitivesButtonsEnabled(bool enabled);
     void setButtonColor(QPushButton* button, const QColor& color);
-    void setSquareButton(QPushButton* button);
+    void setToolButtonColor(QToolButton* button, const QColor& color);
+    void setButtonSize(QPushButton* button);
+    void setToolButtonSize(QToolButton* button);
     QPushButton* createButton(const QString& text, const QColor& color);
+    QToolButton* createToolButton(const QString& text, const QColor& color);
     void setPlaneToXY();
     void setXZPlaneToXY();
     void setYZPlaneToXY();
     void renderPrimitiveFile(osg::Node* primitivesNode);
     osg::Node* createPrimitivesNode(const std::vector<osg::ref_ptr<osg::Geode>>& geodes);
 
+
     QWidget* mWidget;
     QGridLayout* mGridLayout;
-    QPushButton* mSketchButton;
-    QPushButton* mViewButton;
-    QPushButton* mXYButton;
-    QPushButton* mYZButton;
-    QPushButton* mXZButton;
+
+    QToolButton* mSketchButton;
+    QToolButton* mViewButton;
+    QToolButton* mXYButton;
+    QToolButton* mYZButton;
+    QToolButton* mXZButton;
     QPushButton* mPointButton;
     QPushButton* mLineButton;
     QPushButton* mCircleButton;
@@ -56,6 +63,22 @@ private:
     QPushButton* mArcButton;
     QPushButton* mSaveButton;
     QPushButton* mDeleteButton;
+    QPushButton* mSetButton;
+    QLabel* mPlaneTextLabel;
+    QListWidget* mPrimitiveListWidget;
+    QVBoxLayout* mRightLayout;
+
+    QDoubleSpinBox* mSpinBox1;
+    QDoubleSpinBox* mSpinBox2;
+    QDoubleSpinBox* mSpinBox3;
+    QDoubleSpinBox* mSpinBox4;
+    QDoubleSpinBox* mSpinBox5;
+    QDoubleSpinBox* mSpinBox6;
+    QDoubleSpinBox* mSpinBox7;
+    QDoubleSpinBox* mSpinBox8;
+    QDoubleSpinBox* mSpinBox9;
+    QDoubleSpinBox* mSpinBox10;
+    QDoubleSpinBox* mSpinBox11;
 
     QMainWindow mWindow;
     OpenSceneGraphViewer* mOsgViewer;
@@ -63,4 +86,8 @@ private:
 
     bool mYZPlaneEnabled = false;
     bool mXZPlaneEnabled = false;
+    bool shouldUpdateDefaultValues = false;
+
+    osg::ref_ptr<osg::Group> mPrimitivesGroup;
+
 };

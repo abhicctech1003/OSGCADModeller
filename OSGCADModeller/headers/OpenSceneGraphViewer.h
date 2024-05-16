@@ -22,6 +22,7 @@ public:
     osg::Node* getSceneData() const;
     void updateSceneData(osg::Node* newSceneData);
     osg::Node* getSceneGraph() const;
+    void addPlaneTextLabel(QLabel* label);
 
 protected:
     void paintGL();
@@ -34,10 +35,12 @@ protected:
     osgGA::EventQueue* getEventQueue() const;
 
 private:
+
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> mOsgGraphicsViewer;
     osg::ref_ptr<osgViewer::Viewer> mViewer;
     osg::ref_ptr<osg::Geode> mGeode;
     qreal m_scale;
     bool mViewButtonClicked = false;
     osg::ref_ptr<osg::Node> mSceneGraph;
+    QVBoxLayout* mLayout; // Add this line for the layout
 };
