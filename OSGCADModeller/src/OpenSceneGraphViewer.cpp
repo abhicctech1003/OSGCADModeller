@@ -171,6 +171,7 @@ osg::Node* OpenSceneGraphViewer::getSceneData() const
     return mViewer->getSceneData();
 }
 
+// update scene data for plane selection
 void OpenSceneGraphViewer::updateSceneData(osg::Node* newSceneData)
 {
     // Set the new scene data
@@ -185,18 +186,22 @@ osg::Node* OpenSceneGraphViewer::getSceneGraph() const
 void OpenSceneGraphViewer::addPlaneTextLabel(QLabel* label)
 {
     QLayout* viewerLayout = layout(); // Assuming mLayout is the layout of OSG viewer
-    if (viewerLayout) {
+    if (viewerLayout)
+    {
         viewerLayout->addWidget(label);
         viewerLayout->setAlignment(label, Qt::AlignRight | Qt::AlignTop);
     }
-    else {
+    else
+    {
         QWidget* centralWidget = findChild<QWidget*>(); // Assuming there's only one central widget
-        if (centralWidget && centralWidget->layout()) {
+        if (centralWidget && centralWidget->layout())
+        {
             QLayout* centralLayout = centralWidget->layout();
             centralLayout->addWidget(label);
             centralLayout->setAlignment(label, Qt::AlignRight | Qt::AlignTop);
         }
-        else {
+        else
+        {
             QWidget::setLayout(new QVBoxLayout); // Create a layout for the viewer
             viewerLayout = layout();
             viewerLayout->addWidget(label);

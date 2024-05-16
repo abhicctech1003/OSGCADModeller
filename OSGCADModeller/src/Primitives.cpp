@@ -11,30 +11,32 @@
 #include <osg/Point>
 #include <osg/GL>
 
-osg::Geode* Primitives::createPoint(const osg::Vec3& position)
+// Function To Create a Point
+osg::Geode* Primitives::createPoint()
 {
-     //Implementation of createPoint function
     osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
 
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
-    vertices->push_back(position);
     geom->setVertexArray(vertices);
 
+    float angleIncrement = 2.0f * osg::PI / 36;
+    for (int i = 0; i < 36; ++i) {
+        float angle = angleIncrement * i;
+        float x = 0.00000001 * cos(angle);
+        float z = 0.00000001 * sin(angle);
+        vertices->push_back(osg::Vec3(x, 0.0f, z));
+    }
+
+    osg::ref_ptr<osg::DrawArrays> drawArray = new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP, 0, 36);
+    geom->addPrimitiveSet(drawArray);
+
     osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-    colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    colors->push_back(osg::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
     geom->setColorArray(colors, osg::Array::BIND_OVERALL);
 
-    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, 1));
-
-    // Set point size
-    osg::StateSet* state = geom->getOrCreateStateSet();
-    state->setMode(GL_POINT_SMOOTH, osg::StateAttribute::ON);
-    state->setMode(GL_VERTEX_PROGRAM_POINT_SIZE, osg::StateAttribute::ON); // Enable vertex program point size mode
-    state->setAttribute(new osg::Point(10.0f), osg::StateAttribute::ON);
-
-    osg::Point* pointAttribute = new osg::Point;
-    pointAttribute->setSize(10.0f);
-    geom->getOrCreateStateSet()->setAttribute(pointAttribute);
+    osg::ref_ptr<osg::StateSet> stateSet = new osg::StateSet;
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    geom->setStateSet(stateSet);
 
     osg::ref_ptr<osg::Geode> geode = new osg::Geode;
     geode->addDrawable(geom);
@@ -42,6 +44,7 @@ osg::Geode* Primitives::createPoint(const osg::Vec3& position)
     return geode.release();
 }
 
+// Function To Create a Line
 osg::Geode* Primitives::createLine(const osg::Vec3& start, const osg::Vec3& end)
 {
     // Implementation of createLine function
@@ -64,6 +67,7 @@ osg::Geode* Primitives::createLine(const osg::Vec3& start, const osg::Vec3& end)
     return geode.release();
 }
 
+// Function To Create a Circle
 osg::Geode* Primitives::createCircle(float radius, int numSegments)
 {
     // Implementation of createCircle function
@@ -95,9 +99,9 @@ osg::Geode* Primitives::createCircle(float radius, int numSegments)
     geode->addDrawable(geom);
 
     return geode.release();
-
 }
 
+// Function To Create a Ellipse
 osg::Geode* Primitives::createEllipse(float majorRadius, float minorRadius, int numSegments)
 {
     // Implementation of createEllipse function
@@ -107,7 +111,7 @@ osg::Geode* Primitives::createEllipse(float majorRadius, float minorRadius, int 
     geom->setVertexArray(vertices);
 
     float angleIncrement = 2.0f * osg::PI / numSegments;
-    for (int i = 0; i < numSegments; ++i) 
+    for (int i = 0; i < numSegments; ++i)
     {
         float angle = angleIncrement * i;
         float x = majorRadius * cos(angle);
@@ -121,7 +125,7 @@ osg::Geode* Primitives::createEllipse(float majorRadius, float minorRadius, int 
     // Create a primitive set (line loop)
     osg::ref_ptr<osg::DrawElementsUInt> loop =
         new osg::DrawElementsUInt(osg::PrimitiveSet::LINE_LOOP, 0);
-    for (unsigned int i = 0; i < numSegments; ++i) 
+    for (unsigned int i = 0; i < numSegments; ++i)
     {
         loop->push_back(i);
     }
@@ -136,6 +140,7 @@ osg::Geode* Primitives::createEllipse(float majorRadius, float minorRadius, int 
     return geode.release();
 }
 
+// Function To Create a Arc
 osg::Geode* Primitives::createArc(float radiusX, float radiusY, float startAngle, float endAngle, int numSegments)
 {
     // Implementation of createArc function
@@ -152,7 +157,7 @@ osg::Geode* Primitives::createArc(float radiusX, float radiusY, float startAngle
     float angleIncrement = (endAngle - startAngle) / (numSegments - 1);
 
     // Add points along the arc
-    for (int i = 0; i < numSegments; ++i) 
+    for (int i = 0; i < numSegments; ++i)
     {
         float angle = startAngle + angleIncrement * i;
         float x = radiusX * cos(angle);
@@ -163,7 +168,7 @@ osg::Geode* Primitives::createArc(float radiusX, float radiusY, float startAngle
     // Create a primitive set (line strip)
     osg::ref_ptr<osg::DrawElementsUInt> strip =
         new osg::DrawElementsUInt(osg::PrimitiveSet::LINE_STRIP, 0);
-    for (unsigned int i = 0; i < numSegments; ++i) 
+    for (unsigned int i = 0; i < numSegments; ++i)
     {
         strip->push_back(i);
     }
@@ -177,3 +182,12 @@ osg::Geode* Primitives::createArc(float radiusX, float radiusY, float startAngle
 
     return geode.release();
 }
+
+// Definition of static member variables
+osg::Vec3 Primitives::defaultLineStart = osg::Vec3(0.0f, 0.0f, 0.0f);
+osg::Vec3 Primitives::defaultLineEnd = osg::Vec3(1.0f, 1.0f, 0.0f);
+float Primitives::defaultCircleRadius = 1.0f;
+float Primitives::defaultEllipseMajorRadius = 1.0f;
+float Primitives::defaultEllipseMinorRadius = 0.5f;
+float Primitives::defaultArcRadiusX = 45.0f;
+float Primitives::defaultArcRadiusY = 1.0f;

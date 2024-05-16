@@ -27,6 +27,8 @@ private slots:
     void onArcButtonClicked();
     void onSaveButtonClicked();
     void onDeleteButtonClicked();
+    void updateDefaultValues();
+    void onSetButtonClicked();
 
 private:
     void setupUi();
@@ -61,9 +63,22 @@ private:
     QPushButton* mArcButton;
     QPushButton* mSaveButton;
     QPushButton* mDeleteButton;
+    QPushButton* mSetButton;
     QLabel* mPlaneTextLabel;
     QListWidget* mPrimitiveListWidget;
     QVBoxLayout* mRightLayout;
+
+    QDoubleSpinBox* mSpinBox1;
+    QDoubleSpinBox* mSpinBox2;
+    QDoubleSpinBox* mSpinBox3;
+    QDoubleSpinBox* mSpinBox4;
+    QDoubleSpinBox* mSpinBox5;
+    QDoubleSpinBox* mSpinBox6;
+    QDoubleSpinBox* mSpinBox7;
+    QDoubleSpinBox* mSpinBox8;
+    QDoubleSpinBox* mSpinBox9;
+    QDoubleSpinBox* mSpinBox10;
+    QDoubleSpinBox* mSpinBox11;
 
     QMainWindow mWindow;
     OpenSceneGraphViewer* mOsgViewer;
@@ -71,4 +86,5 @@ private:
 
     bool mYZPlaneEnabled = false;
     bool mXZPlaneEnabled = false;
+
 };

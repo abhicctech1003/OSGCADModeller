@@ -115,6 +115,98 @@ void Visualizer::setupUi()
     QWidget* rightWidget = new QWidget;
     rightWidget->setLayout(rightLayout);
 
+    // Create layout for spin boxes
+    QVBoxLayout* spinBoxLayout = new QVBoxLayout;
+
+    // Add all spin boxes to spin box layout
+    mSpinBox1 = new QDoubleSpinBox(this);
+    mSpinBox2 = new QDoubleSpinBox(this);
+    mSpinBox3 = new QDoubleSpinBox(this);
+    mSpinBox4 = new QDoubleSpinBox(this);
+    mSpinBox5 = new QDoubleSpinBox(this);
+    mSpinBox6 = new QDoubleSpinBox(this);
+    mSpinBox7 = new QDoubleSpinBox(this);
+    mSpinBox8 = new QDoubleSpinBox(this);
+    mSpinBox9 = new QDoubleSpinBox(this);
+    mSpinBox10 = new QDoubleSpinBox(this);
+    mSpinBox11 = new QDoubleSpinBox(this);
+
+    // Set names for the spin boxes
+    mSpinBox1->setObjectName("SpinBox1");
+    mSpinBox2->setObjectName("SpinBox2");
+    mSpinBox3->setObjectName("SpinBox3");
+    mSpinBox4->setObjectName("SpinBox4");
+    mSpinBox5->setObjectName("SpinBox5");
+    mSpinBox6->setObjectName("SpinBox6");
+    mSpinBox7->setObjectName("SpinBox7");
+    mSpinBox8->setObjectName("SpinBox8");
+    mSpinBox9->setObjectName("SpinBox9");
+    mSpinBox10->setObjectName("SpinBox10");
+    mSpinBox11->setObjectName("SpinBox10");
+
+    // Initially hide all spin boxes
+    mSpinBox1->hide();
+    mSpinBox2->hide();
+    mSpinBox3->hide();
+    mSpinBox4->hide();
+    mSpinBox5->hide();
+    mSpinBox6->hide();
+    mSpinBox7->hide();
+    mSpinBox8->hide();
+    mSpinBox9->hide();
+    mSpinBox10->hide();
+    mSpinBox11->hide();
+
+    // Additional spin boxes for line start and end points
+    mSpinBox1->setValue(Primitives::defaultLineStart.x()); // Default line start point X
+    mSpinBox2->setValue(Primitives::defaultLineStart.y()); // Default line start point Y
+    mSpinBox3->setValue(Primitives::defaultLineStart.z()); // Default line start point Z
+    mSpinBox4->setValue(Primitives::defaultLineEnd.x()); // Default line end point X
+    mSpinBox5->setValue(Primitives::defaultLineEnd.y()); // Default line end point Y
+    mSpinBox6->setValue(Primitives::defaultLineEnd.z()); // Default line end point Z
+    // Set default values for spin boxes
+    mSpinBox7->setValue(Primitives::defaultCircleRadius); // Default circle radius
+    mSpinBox8->setValue(Primitives::defaultEllipseMajorRadius); // Default ellipse major radius
+    mSpinBox9->setValue(Primitives::defaultEllipseMinorRadius); // Default ellipse minor radius
+    mSpinBox10->setValue(Primitives::defaultArcRadiusX); // Default arc radius X
+    mSpinBox11->setValue(Primitives::defaultArcRadiusY); // Default arc radius X
+
+    spinBoxLayout->addWidget(mSpinBox1);
+    spinBoxLayout->addWidget(mSpinBox2);
+    spinBoxLayout->addWidget(mSpinBox3);
+    spinBoxLayout->addWidget(mSpinBox4);
+    spinBoxLayout->addWidget(mSpinBox5);
+    spinBoxLayout->addWidget(mSpinBox6);
+    spinBoxLayout->addWidget(mSpinBox7);
+    spinBoxLayout->addWidget(mSpinBox8);
+    spinBoxLayout->addWidget(mSpinBox9);
+    spinBoxLayout->addWidget(mSpinBox10);
+    spinBoxLayout->addWidget(mSpinBox11);
+
+    // Add spin box layout to right layout
+    rightLayout->addLayout(spinBoxLayout);
+
+    //QWidget* rightWidget = new QWidget;
+    rightWidget->setLayout(rightLayout);
+
+    mSetButton = createButton("Set", Qt::gray);
+    rightLayout->addWidget(mSetButton);
+
+    // Connect spin box signals to slots
+    connect(mSpinBox1, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox2, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox3, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox4, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox5, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox6, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox7, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox8, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox9, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+    connect(mSpinBox10, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &Visualizer::updateDefaultValues);
+
+    // Connect the clicked signal of the QPushButton to a slot in Visualizer class
+    connect(mSetButton, &QPushButton::clicked, this, &Visualizer::onSetButtonClicked);
+
     // Create layout
     mGridLayout = new QGridLayout(this);
 
@@ -131,7 +223,6 @@ void Visualizer::setupUi()
     mGridLayout->addWidget(mArcButton, 0, 9);
     mGridLayout->addWidget(mSaveButton, 0, 10);
     mGridLayout->addWidget(mDeleteButton, 0, 11);
-    mGridLayout->setSpacing(5); // Set spacing between buttons
 
     mainLayout->addLayout(mGridLayout);
 
@@ -228,7 +319,7 @@ void Visualizer::onXZButtonClicked()
 
 void Visualizer::onPointButtonClicked()
 {
-    osg::Geode* pointGeode = Primitives::createPoint(osg::Vec3(2.0f, 1.0f, 0.0f));
+    osg::Geode* pointGeode = Primitives::createPoint();
     mOsgViewer->addDrawable(pointGeode);
     mOsgViewer->update();
 
@@ -237,7 +328,25 @@ void Visualizer::onPointButtonClicked()
 
 void Visualizer::onLineButtonClicked()
 {
-    osg::Geode* lineGeode = Primitives::createLine(osg::Vec3(-1.0f, 0.0f, 0.0f), osg::Vec3(1.0f, 0.0f, 0.0f));
+    mSpinBox1->show();
+    mSpinBox2->show();
+    mSpinBox3->show();
+    mSpinBox4->show();
+    mSpinBox5->show();
+    mSpinBox6->show();
+    mSpinBox1->setPrefix("Start Point x: ");
+    mSpinBox2->setPrefix("Start Point y: ");
+    mSpinBox3->setPrefix("Start Point z: ");
+    mSpinBox4->setPrefix("End Point   x: ");
+    mSpinBox5->setPrefix("End Point   y: ");
+    mSpinBox6->setPrefix("End Point   z: ");
+    mSpinBox7->hide();
+    mSpinBox8->hide();
+    mSpinBox9->hide();
+    mSpinBox10->hide();
+    mSpinBox11->hide();
+
+    osg::Geode* lineGeode = Primitives::createLine();
     mOsgViewer->addDrawable(lineGeode);
     mOsgViewer->update();
 
@@ -246,7 +355,20 @@ void Visualizer::onLineButtonClicked()
 
 void Visualizer::onCircleButtonClicked()
 {
-    osg::Geode* circleGeode = Primitives::createCircle(0.05f, 36);
+    mSpinBox1->hide();
+    mSpinBox2->hide();
+    mSpinBox3->hide();
+    mSpinBox4->hide();
+    mSpinBox5->hide();
+    mSpinBox6->hide();
+    mSpinBox7->show();
+    mSpinBox7->setPrefix("Radius: ");
+    mSpinBox8->hide();
+    mSpinBox9->hide();
+    mSpinBox10->hide();
+    mSpinBox11->hide();
+
+    osg::Geode* circleGeode = Primitives::createCircle();
     mOsgViewer->addDrawable(circleGeode);
     mOsgViewer->update();
 
@@ -255,7 +377,21 @@ void Visualizer::onCircleButtonClicked()
 
 void Visualizer::onEllipseButtonClicked()
 {
-    osg::Geode* ellipseGeode = Primitives::createEllipse(0.1f, 0.05, 36);
+    mSpinBox1->hide();
+    mSpinBox2->hide();
+    mSpinBox3->hide();
+    mSpinBox4->hide();
+    mSpinBox5->hide();
+    mSpinBox6->hide();
+    mSpinBox7->hide();
+    mSpinBox8->show();
+    mSpinBox8->setPrefix("Major Radius: ");
+    mSpinBox9->show();
+    mSpinBox9->setPrefix("Minor Radius: ");
+    mSpinBox10->hide();
+    mSpinBox11->hide();
+
+    osg::Geode* ellipseGeode = Primitives::createEllipse();
     mOsgViewer->addDrawable(ellipseGeode);
     mOsgViewer->update();
 
@@ -264,7 +400,21 @@ void Visualizer::onEllipseButtonClicked()
 
 void Visualizer::onArcButtonClicked()
 {
-    osg::Geode* arcGeode = Primitives::createArc(45.0f, 1.0f, osg::PI / 4.0f, 3.0f * osg::PI / 4.0f, 36);
+    mSpinBox1->hide();
+    mSpinBox2->hide();
+    mSpinBox3->hide();
+    mSpinBox4->hide();
+    mSpinBox5->hide();
+    mSpinBox6->hide();
+    mSpinBox7->hide();
+    mSpinBox8->hide();
+    mSpinBox9->hide();
+    mSpinBox10->show();
+    mSpinBox10->setPrefix("Radius X: ");
+    mSpinBox11->show();
+    mSpinBox11->setPrefix("Radius Y: ");
+
+    osg::Geode* arcGeode = Primitives::createArc();
     mOsgViewer->addDrawable(arcGeode);
     mOsgViewer->update();
 
@@ -347,13 +497,13 @@ void Visualizer::setToolButtonColor(QToolButton* button, const QColor& color)
 // To set button size
 void Visualizer::setButtonSize(QPushButton* button)
 {
-    button->setFixedSize(100, 60); // Set size to create square shape
+    button->setFixedSize(110, 60); // Set size to create square shape
 }
 
 // To set tool button size
 void Visualizer::setToolButtonSize(QToolButton* button)
 {
-    button->setFixedSize(100, 60); // Set size to create square shape
+    button->setFixedSize(110, 60); // Set size to create square shape
 }
 
 // To set XY plane as rendering plane 
@@ -435,7 +585,8 @@ osg::Node* Visualizer::createPrimitivesNode(const std::vector<osg::ref_ptr<osg::
     osg::ref_ptr<osg::Geode> geode = new osg::Geode;
 
     // Add existing primitives to the geode
-    for (const auto& g : geodes) {
+    for (const auto& g : geodes)
+    {
         if (g.valid())
             geode->addChild(g);
     }
@@ -461,4 +612,29 @@ void Visualizer::renderPrimitiveFile(osg::Node* primitivesNode)
     {
         std::cerr << "Failed to save primitives" << std::endl;
     }
+}
+
+// To update the default values of parameter
+void Visualizer::updateDefaultValues()
+{
+    // Update default values for line start and end points
+    Primitives::setDefaultLineStart(osg::Vec3(mSpinBox1->value(), mSpinBox2->value(), mSpinBox3->value()));
+    Primitives::setDefaultLineEnd(osg::Vec3(mSpinBox4->value(), mSpinBox5->value(), mSpinBox6->value()));
+
+    // Update default values for circle radius
+    Primitives::setDefaultCircleRadius(mSpinBox7->value());
+
+    // Update default values for ellipse major and minor radius
+    Primitives::setDefaultEllipseMajorRadius(mSpinBox8->value());
+    Primitives::setDefaultEllipseMinorRadius(mSpinBox9->value());
+
+    // Update default values for arc radii
+    Primitives::setDefaultArcRadiusX(mSpinBox10->value());
+    Primitives::setDefaultArcRadiusY(mSpinBox11->value());
+}
+
+// Update the default values for primitives based on spin box values
+void Visualizer::onSetButtonClicked()
+{
+    updateDefaultValues();
 }
